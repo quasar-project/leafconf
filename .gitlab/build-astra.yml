@@ -5,7 +5,7 @@ build astra:
   before_script:
     - whoami
     - echo $CI_JOB_TOKEN
-    - git clone --recurse-submodules http://runner:$(CI_JOB_TOKEN)@uav.radar-mms.com/gitlab/test/simulator/leaf.git
+    - git clone --recurse-submodules http://runner:${CI_JOB_TOKEN}@uav.radar-mms.com/gitlab/test/simulator/leaf.git
     - cd leaf
     - ls -la
     - cd ..
