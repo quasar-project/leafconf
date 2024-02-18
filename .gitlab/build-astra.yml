@@ -14,7 +14,7 @@ build astra:
   script:
     - mkdir -p target
     - cd target
-    - cmake-alse -DCMAKE_PREFIX_PATH=$HOME/cmake-installs --GNinja -DCMAKE_BUILD_TYPE=Release ..
+    - cmake-alse -DCMAKE_PREFIX_PATH=/tmp/cmake-installs --GNinja -DCMAKE_BUILD_TYPE=Release ..
     - ninja
 
   artifacts:
