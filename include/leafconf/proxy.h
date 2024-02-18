@@ -1,8 +1,5 @@
-//
-// Created by radar on 2/18/24.
-//
+#pragma once
 
-#ifndef PROXY_H
-#define PROXY_H
-
-#endif //PROXY_H
+namespace leaf::conf
+{
+}

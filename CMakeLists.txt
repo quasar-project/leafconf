@@ -20,12 +20,13 @@ check_language_features()
 find_package(leaf 0.3.2 REQUIRED CONFIG)
 
 add_library(${PROJECT_NAME} STATIC)
-add_library(leaf::config ALIAS ${PROJECT_NAME})
+add_library(leaf::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/proxy.h> $<INSTALL_INTERFACE:include/leafconf/proxy.h>
   PRIVATE
+    src/c++/dummy.c++
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -49,22 +50,22 @@ set(config_targets_file "leafconfConfigTargets.cmake")
 set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/leafconfConfigVersion.cmake")
 set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/leafconf")
 
-install(TARGETS leafconf
-  EXPORT leafconf
+install(TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(DIRECTORY 
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf> $<INSTALL_INTERFACE:include/leafconf> ;
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}> $<INSTALL_INTERFACE:include/${PROJECT_NAME}> ;
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-export(TARGETS leafconf
+export(TARGETS ${PROJECT_NAME}
   NAMESPACE leaf::
   FILE "${CMAKE_CURRENT_BINARY_DIR}/${config_targets_file}"
 )
-install(EXPORT leafconf
+install(EXPORT ${PROJECT_NAME}
   DESTINATION "${export_dest_dir}"
   NAMESPACE leaf::
   FILE "${config_targets_file}"
