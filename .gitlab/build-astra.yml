@@ -4,6 +4,10 @@ build astra:
 
   before_script:
     - whoami
+    - git clone --recurse-submodules http://uav.radar-mms.com/gitlab/test/simulator/leaf.git
+    - cd leaf
+    - ls -la
+    - cd ..
 
   script:
     - mkdir -p target
