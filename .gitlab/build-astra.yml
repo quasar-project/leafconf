@@ -4,7 +4,7 @@ build astra:
 
   before_script:
     - whoami
-    - git clone --recurse-submodules 213.170.107.251/gitlab/test/simulator/leaf.git
+    - git clone --recurse-submodules http://213.170.107.251/gitlab/test/simulator/leaf.git
     - cd leaf
     - ls -la
     - cd ..
