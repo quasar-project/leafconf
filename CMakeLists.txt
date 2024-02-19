@@ -25,7 +25,10 @@ add_library(leaf::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/proxy.h> $<INSTALL_INTERFACE:include/leafconf/proxy.h>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/serialization.h> $<INSTALL_INTERFACE:include/leafconf/serialization.h>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/static.h> $<INSTALL_INTERFACE:include/leafconf/static.h>
   PRIVATE
+    src/c++/serializers/toml.h
     src/c++/dummy.c++
 )
 
@@ -42,6 +45,7 @@ target_include_directories(${PROJECT_NAME}
     src/c++
 )
 target_add_metadata_definitions(${PROJECT_NAME})
+enable_static_crt()
 
 # export targets
 set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/leafconfConfig.cmake.in")
