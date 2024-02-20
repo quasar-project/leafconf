@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
+#include <leaf/utils/rtti.h>
 #include <leaf/pattern/iobservable.h>
 #include <leafconf/serialization.h>
 
@@ -16,7 +17,7 @@ namespace leaf::conf
 
   struct AbstractConfigData : public serialization::Serializable,
                               public serialization::Deserializable,
-                              public pattern::IObservable<string>
+                              public pattern::IObservable<int>
   {
     virtual ~AbstractConfigData() = default;
   };
@@ -69,13 +70,47 @@ namespace leaf::conf
   template<AbstractConfigDataType T>
   auto Config<T>::path() const -> const fs::path& { return this->m_path; }
 
-  template <AbstractConfigDataType T>
+  template<AbstractConfigDataType T>
   auto Config<T>::load() -> expected<void, string>
   {
+    if(not fs::exists(this->path()))
+    {
+      llog::debug("config: file does not exist, using defaults");
+      this->revert_to_defaults();
+      return {};
+    }
 
+    const auto content = this->read_from_file();
+    if(not content)
+      return Err(content.error());
+    this->values.deserialize(content, serialization::Serializer::TOML); // todo: transient serializer
+    llog::debug("config: loaded from file");
+    this->values.template notify(0);
+    llog::trace("{}: notifying {} observers", utils::type_name<T>(), this->values.m_observers.size());
+
+    return {};
   }
 
-  template <AbstractConfigDataType T>
+  template<AbstractConfigDataType T>
+  auto Config<T>::save() const -> expected<void, string>
+  {
+    llog::debug("config: saving to file ({})", this->path().string());
+    return this->values.serialize(serialization::Serializer::TOML)
+      .and_then([this](const auto&& content) { return this->write_to_file(content); });
+  }
+
+  template<AbstractConfigDataType T>
+  auto Config<T>::revert_to_defaults() -> void
+  {
+    this->values = this->defaults;
+    llog::debug("config: reverted to defaults");
+    this->values.template notify(0);
+    llog::trace("{}: notifying {} observers", utils::type_name<T>(), this->values.m_observers.size());
+    this->save()
+      .map_error([](const auto&& e) { llog::error("failed to save config file when reverting to defaults: {}", e); });
+  }
+
+  template<AbstractConfigDataType T>
   auto Config<T>::read_from_file() const -> expected<string, string>
   {
     ifstream handle(this->path());
@@ -87,7 +122,7 @@ namespace leaf::conf
     return content;
   }
 
-  template <AbstractConfigDataType T>
+  template<AbstractConfigDataType T>
   auto Config<T>::write_to_file(const string_view content) const -> expected<void, string>
   {
     ofstream handle(this->path());
