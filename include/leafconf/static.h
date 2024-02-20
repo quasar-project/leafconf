@@ -94,7 +94,7 @@ namespace leaf::conf
       return Err(content.error());
     this->values.deserialize(*content, serialization::Serializer::TOML); // todo: transient serializer
     llog::debug("config: loaded from file");
-    this->values.template notify(0);
+    this->values.notify(0);
 
     return {};
   }

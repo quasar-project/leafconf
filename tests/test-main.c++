@@ -145,7 +145,7 @@ class Listener final : public leaf::pattern::IObserver<int>
 {
   public:
     bool ok = false;
-    virtual auto update(const int value) -> void override final {
+    virtual auto update(int value) -> void override final {
       llog::info("new value: {}", value);
       this->ok = true;
     }
@@ -160,13 +160,12 @@ TEST(StaticConfig, Notifications)
     TestConfigData()
   );
 
-  auto listener = new Listener();
-  config.values.subscribe(listener);
+  const auto listener = std::make_shared<Listener>();
+  config.values += listener.get();
 
   const auto load = config.load();
   ASSERT_TRUE(load);
   ASSERT_TRUE(listener->ok);
-  delete listener;
 }
 
 auto main(int argc, char** argv) -> int
