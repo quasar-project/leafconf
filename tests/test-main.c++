@@ -61,11 +61,9 @@ auto TestConfigData::deserialize(const string_view data, const leaf::serializati
   } catch(const toml::parse_error& err) {
     return leaf::Err(err.what());
   }
-  try
-  {
-    TestConfigData temp;
-    temp.test = in["test"].value<u32>().value();
-    temp.ip_address = {
+  try {
+    this->test = in["test"].value<u32>().value();
+    this->ip_address = {
       .ip = in["ip_address"]["ip"].value<string>().value(),
       .port = in["ip_address"]["port"].value<u16>().value(),
       .sock_mode = {
@@ -73,7 +71,6 @@ auto TestConfigData::deserialize(const string_view data, const leaf::serializati
         .udp = in["ip_address"]["sock_mode"]["udp"].value<bool>().value()
       }
     };
-    *this = temp;
   } catch(const bad_optional_access& err) {
     return leaf::Err("error when deserializing: {}", err.what());
   }
