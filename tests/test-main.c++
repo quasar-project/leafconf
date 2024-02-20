@@ -80,7 +80,7 @@ auto TestConfigData::deserialize(const string_view data, const leaf::serializati
   return {};
 }
 
-TEST(StaticConfig, All)
+TEST(StaticConfig, Basic)
 {
   auto config = leaf::conf::Config<TestConfigData>(
     "test.toml",
@@ -103,8 +103,80 @@ TEST(StaticConfig, All)
   ASSERT_TRUE(config.save());
 }
 
+TEST(StaticConfig, Save)
+{
+  auto config = leaf::conf::Config<TestConfigData>(
+    "test.toml",
+    leaf::conf::fs::current_path(),
+    leaf::conf::Config<TestConfigData>::SavingPolicy::Explicitly,
+    TestConfigData()
+  );
+
+  ASSERT_EQ(config.values.test, 0);
+  ASSERT_EQ(config.values.ip_address.ip, "127.0.0.1");
+  ASSERT_EQ(config.values.ip_address.port, 25565);
+  ASSERT_EQ(config.values.ip_address.sock_mode.tcp, true);
+  ASSERT_EQ(config.values.ip_address.sock_mode.udp, false);
+  config.values.ip_address = {
+    .ip = "127.0.0.1",
+    .port = 45555,
+    .sock_mode = {
+      .tcp = false,
+      .udp = true
+    }
+  };
+  const auto save = config.save();
+  ASSERT_TRUE(save);
+  ASSERT_EQ(config.values.test, 0);
+  ASSERT_EQ(config.values.ip_address.ip, "127.0.0.1");
+  ASSERT_EQ(config.values.ip_address.port, 45555);
+  ASSERT_EQ(config.values.ip_address.sock_mode.tcp, false);
+  ASSERT_EQ(config.values.ip_address.sock_mode.udp, true);
+  const auto load = config.load();
+  ASSERT_TRUE(load);
+  ASSERT_EQ(config.values.test, 0);
+  ASSERT_EQ(config.values.ip_address.ip, "127.0.0.1");
+  ASSERT_EQ(config.values.ip_address.port, 45555);
+  ASSERT_EQ(config.values.ip_address.sock_mode.tcp, false);
+  ASSERT_EQ(config.values.ip_address.sock_mode.udp, true);
+}
+
+class Listener final : public leaf::pattern::IObserver<int>
+{
+  public:
+    bool ok = false;
+    virtual auto update(const int value) -> void override final {
+      llog::info("new value: {}", value);
+      this->ok = true;
+    }
+};
+
+TEST(StaticConfig, Notifications)
+{
+  auto config = leaf::conf::Config<TestConfigData>(
+    "test2.toml",
+    leaf::conf::fs::current_path(),
+    leaf::conf::Config<TestConfigData>::SavingPolicy::Explicitly,
+    TestConfigData()
+  );
+
+  auto listener = new Listener();
+  config.values.subscribe(listener);
+
+  const auto load = config.load();
+  ASSERT_TRUE(load);
+  ASSERT_TRUE(listener->ok);
+  delete listener;
+}
+
 auto main(int argc, char** argv) -> int
 {
   ::testing::InitGoogleTest(&argc, argv);
+
+  filesystem::remove(filesystem::current_path() / "test.toml");
+  filesystem::remove(filesystem::current_path() / "test2.toml");
+
+  std::ignore = leaf::log::LogFileConfiguration { "log", 1024 * 1024, 1 }
+    .initialize();
   return ::RUN_ALL_TESTS();
 }

@@ -125,7 +125,7 @@ namespace leaf::conf
       return Err("failed to open file handle for reading at {}", this->path().string());
 
     string content((std::istreambuf_iterator(handle)), std::istreambuf_iterator<char>());
-    llog::trace("config: read {} bytes from file");
+    llog::trace("config: read {} bytes from file", content.size());
     return content;
   }
 
@@ -139,7 +139,7 @@ namespace leaf::conf
     handle << content;
     if(not handle.good())
       return Err("failed to write to file at {}", this->path().string());
-    llog::trace("config: wrote {} bytes to file");
+    llog::trace("config: wrote {} bytes to file", content.size());
     return {};
   }
 }
