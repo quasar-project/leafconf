@@ -67,6 +67,15 @@ namespace leaf::conf
       });
   }
 
+  template <AbstractConfigDataType T>
+  Config<T>::~Config()
+  {
+    if(this->m_saving_policy == SavingPolicy::SaveOnDestruction)
+      this->save()
+        .map_error([](const auto&& e) { llog::error("failed to save config file: {}", e); })
+        .map([this](const auto&&) { llog::debug("config: saved to file ({})", this->path().string()); });
+  }
+
   template<AbstractConfigDataType T>
   auto Config<T>::path() const -> const fs::path& { return this->m_path; }
 
