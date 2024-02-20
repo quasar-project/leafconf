@@ -12,7 +12,7 @@ target_sources(${PROJECT_NAME}-test
 
 target_link_libraries(${PROJECT_NAME}-test
   PRIVATE
-  GTest::GTest
-  GTest::Main
-  ${PROJECT_NAME}
+    GTest::GTest
+    GTest::Main
+    ${PROJECT_NAME}
 )
