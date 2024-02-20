@@ -20,14 +20,14 @@ namespace leaf::serialization
   {
     public:
       virtual ~Serializable() = default;
-      virtual auto serialize(Serializer) const -> expected<string, string> = 0;
+      [[nodiscard]] virtual auto serialize(Serializer) const -> expected<string, string> = 0;
   };
 
   class Deserializable
   {
     public:
       virtual ~Deserializable() = default;
-      virtual auto deserialize(string_view, Serializer) -> expected<void, string> = 0;
+      [[nodiscard]] virtual auto deserialize(string_view, Serializer) -> expected<void, string> = 0;
   };
 
   template<typename T>

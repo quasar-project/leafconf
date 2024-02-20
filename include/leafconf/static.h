@@ -38,7 +38,7 @@ namespace leaf::conf
       T values;
       T defaults;
 
-      Config(string_view filename, const fs::path& folder, SavingPolicy policy);
+      Config(string_view filename, const fs::path& folder, SavingPolicy policy, T default_values);
       ~Config();
 
       [[nodiscard]] auto path() const -> const fs::path&;
@@ -57,8 +57,9 @@ namespace leaf::conf
   };
 
   template<AbstractConfigDataType T>
-  Config<T>::Config(const string_view filename, const fs::path& folder, const SavingPolicy policy)
-    : m_saving_policy(policy),
+  Config<T>::Config(const string_view filename, const fs::path& folder, const SavingPolicy policy, T default_values)
+    : defaults(default_values),
+      m_saving_policy(policy),
       m_path(folder / filename)
   {
     this->load()
@@ -72,8 +73,7 @@ namespace leaf::conf
   {
     if(this->m_saving_policy == SavingPolicy::SaveOnDestruction)
       this->save()
-        .map_error([](const auto&& e) { llog::error("failed to save config file: {}", e); })
-        .map([this](const auto&&) { llog::debug("config: saved to file ({})", this->path().string()); });
+        .map_error([](const auto&& e) { llog::error("failed to save config file: {}", e); });
   }
 
   template<AbstractConfigDataType T>
@@ -92,10 +92,9 @@ namespace leaf::conf
     const auto content = this->read_from_file();
     if(not content)
       return Err(content.error());
-    this->values.deserialize(content, serialization::Serializer::TOML); // todo: transient serializer
+    this->values.deserialize(*content, serialization::Serializer::TOML); // todo: transient serializer
     llog::debug("config: loaded from file");
     this->values.template notify(0);
-    llog::trace("{}: notifying {} observers", utils::type_name<T>(), this->values.m_observers.size());
 
     return {};
   }
@@ -114,7 +113,6 @@ namespace leaf::conf
     this->values = this->defaults;
     llog::debug("config: reverted to defaults");
     this->values.template notify(0);
-    llog::trace("{}: notifying {} observers", utils::type_name<T>(), this->values.m_observers.size());
     this->save()
       .map_error([](const auto&& e) { llog::error("failed to save config file when reverting to defaults: {}", e); });
   }

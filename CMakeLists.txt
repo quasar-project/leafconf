@@ -20,6 +20,7 @@ set_language_standard(20)
 check_language_features()
 
 find_package(leaf 0.3.2 REQUIRED CONFIG)
+find_package(tomlplusplus 3.4.0 REQUIRED CONFIG)
 
 add_library(${PROJECT_NAME} STATIC)
 add_library(leaf::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -30,14 +31,15 @@ target_sources(${PROJECT_NAME}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/proxy.h> $<INSTALL_INTERFACE:include/leafconf/proxy.h>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/serialization.h> $<INSTALL_INTERFACE:include/leafconf/serialization.h>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/static.h> $<INSTALL_INTERFACE:include/leafconf/static.h>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/serializers/toml.h> $<INSTALL_INTERFACE:include/leafconf/serializers/toml.h>
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/serializers/toml.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/dummy.c++
 )
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     leaf::leaf
+    tomlplusplus::tomlplusplus
 )
 
 target_include_directories(${PROJECT_NAME}
