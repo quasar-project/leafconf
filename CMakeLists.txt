@@ -14,6 +14,8 @@ include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 include(cmake/all.cmake)
 
+option(INTEGRATION_TESTS "Enable integration test" OFF)
+
 set_language_standard(20)
 check_language_features()
 
@@ -22,14 +24,15 @@ find_package(leaf 0.3.2 REQUIRED CONFIG)
 add_library(${PROJECT_NAME} STATIC)
 add_library(leaf::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
+# get_target_property(MY_PROJECT_SOURCES my_project SOURCES)
 target_sources(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/proxy.h> $<INSTALL_INTERFACE:include/leafconf/proxy.h>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/serialization.h> $<INSTALL_INTERFACE:include/leafconf/serialization.h>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/leafconf/static.h> $<INSTALL_INTERFACE:include/leafconf/static.h>
   PRIVATE
-    src/c++/serializers/toml.h
-    src/c++/dummy.c++
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/serializers/toml.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/c++/dummy.c++
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -47,7 +50,12 @@ target_include_directories(${PROJECT_NAME}
 target_add_metadata_definitions(${PROJECT_NAME})
 enable_static_crt()
 
-# export targets
+# ===  TESTS  ===
+if(INTEGRATION_TESTS)
+  add_subdirectory(tests)
+endif()
+
+# === INSTALL ===
 set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/leafconfConfig.cmake.in")
 set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/leafconfConfig.cmake")
 set(config_targets_file "leafconfConfigTargets.cmake")
@@ -95,3 +103,5 @@ add_custom_command(TARGET ${PROJECT_NAME}
   COMMAND ;
   COMMENT "${POST_BUILD_COMMENT}"
 )
+
+unset(INTEGRATION_TESTS CACHE)

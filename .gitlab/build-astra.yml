@@ -2,20 +2,11 @@ build astra:
   tags: [alse]
   stage: build
 
-  before_script:
-    - whoami
-    - git clone --recurse-submodules http://gitlab-ci-token:${CI_JOB_TOKEN}@uav.radar-mms.com/gitlab/test/simulator/leaf.git
-    - cd leaf
-    - ls -la
-    - chmod +x install-local.sh
-    - ./install-local.sh
-    - cd ..
-
   script:
     - mkdir -p target
     - cd target
-    - cmake-alse -DCMAKE_PREFIX_PATH=/tmp/cmake-installs -GNinja -DCMAKE_BUILD_TYPE=Release ..
-    - ninja
+    - cmake-alse -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    - cmake --build .
 
   artifacts:
     paths: [ target/*.a ]
