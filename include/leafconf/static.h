@@ -92,7 +92,9 @@ namespace leaf::conf
     const auto content = this->read_from_file();
     if(not content)
       return Err(content.error());
-    this->values.deserialize(*content, serialization::Serializer::TOML); // todo: transient serializer
+    const auto deserialize = this->values.deserialize(*content, serialization::Serializer::TOML); // todo: transient serializer
+    if(not deserialize)
+      return Err(deserialize.error());
     llog::debug("config: loaded from file");
     this->values.notify(0);
 
