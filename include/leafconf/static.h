@@ -19,7 +19,7 @@ namespace leaf::conf
                               public serialization::Deserializable,
                               public pattern::IObservable<int>
   {
-    virtual ~AbstractConfigData() = default;
+    virtual ~AbstractConfigData() override = default;
   };
 
   template<typename T>
