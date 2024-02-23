@@ -15,6 +15,14 @@ include:
         when: never
       - when: always
 
+  - project: 'test/essentials/ci'
+    ref: main
+    file: 'build/alse/build-alse-strict.yml'
+
+  - project: 'test/essentials/ci'
+    ref: main
+    file: 'build/windows/build-windows-strict.yml'
+
   - local: /.gitlab/install.yml
   - local: /.gitlab/doxygen.yml
 
