@@ -21,6 +21,7 @@ include:
     file: 'poppy/upload-artifactory.yml'
 
 
+
   - local: /.gitlab/build-astra.yml
     rules:
     - if: $CI_PIPELINE_SOURCE == "trigger-install-windows"
