@@ -7,3 +7,4 @@ description = "Configuration/serialization library for C++ projects"
 [dependencies]
 cmake = { version = { major = 0, minor = 1, patch = 1 }, distribution = "sources" }
 leaf = { version = { major = 0, minor = 3, patch = 3 }, distribution = "static" }
+toml = { version = { major = 3, minor = 4, patch = 0 }, distribution = "static" }
