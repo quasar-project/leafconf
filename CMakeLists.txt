@@ -9,10 +9,10 @@ project(leafconf
   LANGUAGES C CXX
 )
 
-include(dependencies/all.cmake)
-
 option(INTEGRATION_TESTS "Enable integration test" OFF)
 
+include(dependencies/cmake/all.cmake)
+enable_cross_compile_options()
 set_language_standard(20)
 check_language_features()
 
