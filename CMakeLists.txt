@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.15)
 include_guard(GLOBAL)
 
 project(leafconf
-  VERSION 0.1.0
+  VERSION 0.1.1
   DESCRIPTION "Configuration file management library"
   HOMEPAGE_URL "io.whs31.leaf"
   LANGUAGES C CXX
 )
 
-include(cmake/all.cmake)
+include(dependencies/all.cmake)
 
 option(INTEGRATION_TESTS "Enable integration test" OFF)
 
