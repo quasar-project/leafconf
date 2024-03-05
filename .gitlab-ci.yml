@@ -3,50 +3,64 @@ variables:
   GIT_DEPTH: 100
   PKG_VER: 0.0.0
 
+
+stages: 
+  # - test
+  - build
+  - poppy
+
 include:
   - project: 'test/essentials/ci'
     ref: main
-    file: 'poppy/any-src-artifacts.yml'
+    file: 'poppy/poppy.yml'
+    inputs:
+      build_windows_static: 'true'
+      build_alse_static: 'true'
 
-  - project: 'test/essentials/ci'
-    ref: main
-    file: 'poppy/alse-static-artifacts.yml'
+# include:
+#   - project: 'test/essentials/ci'
+#     ref: main
+#     file: 'poppy/any-src-artifacts.yml'
 
-  - project: 'test/essentials/ci'
-    ref: main
-    file: 'poppy/windows-static-artifacts.yml'
+#   - project: 'test/essentials/ci'
+#     ref: main
+#     file: 'poppy/alse-static-artifacts.yml'
 
-  - project: 'test/essentials/ci'
-    ref: main
-    file: 'poppy/upload-artifactory.yml'
+#   - project: 'test/essentials/ci'
+#     ref: main
+#     file: 'poppy/windows-static-artifacts.yml'
+
+#   - project: 'test/essentials/ci'
+#     ref: main
+#     file: 'poppy/upload-artifactory.yml'
 
 
 
-  - local: /.gitlab/build-astra.yml
-    rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger-install-windows"
-      when: never
-    - when: always
-  - local: /.gitlab/build-windows.yml
-    rules:
-      - if: $CI_PIPELINE_SOURCE == "trigger-install-alse"
-        when: never
-      - when: always
+#   - local: /.gitlab/build-astra.yml
+#     rules:
+#     - if: $CI_PIPELINE_SOURCE == "trigger-install-windows"
+#       when: never
+#     - when: always
+#   - local: /.gitlab/build-windows.yml
+#     rules:
+#       - if: $CI_PIPELINE_SOURCE == "trigger-install-alse"
+#         when: never
+#       - when: always
 
-  - project: 'test/essentials/ci'
-    ref: main
-    file: 'build/alse/build-alse-strict.yml'
+#   - project: 'test/essentials/ci'
+#     ref: main
+#     file: 'build/alse/build-alse-strict.yml'
 
-  - project: 'test/essentials/ci'
-    ref: main
-    file: 'build/windows/build-windows-strict.yml'
+#   - project: 'test/essentials/ci'
+#     ref: main
+#     file: 'build/windows/build-windows-strict.yml'
 
-  - local: /.gitlab/install.yml
-  - local: /.gitlab/doxygen.yml
+#   - local: /.gitlab/install.yml
+#   - local: /.gitlab/doxygen.yml
 
-stages:
-  - poppy-generate
-  - poppy-upload
-  - build
-  - install
-  - documentation
+# stages:
+#   - poppy-generate
+#   - poppy-upload
+#   - build
+#   - install
+#   - documentation
