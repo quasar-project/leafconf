@@ -6,7 +6,7 @@ description = "Configuration/serialization library for C++ projects"
 [package.version]
 major = 0
 minor = 1
-patch = 1
+patch = 2
 
 [dependencies]
 cmake = { version = { major = 0, minor = 1, patch = 2 }, distribution = "sources" }
