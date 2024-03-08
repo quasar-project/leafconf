@@ -16,3 +16,4 @@ include:
     inputs:
       build_windows_static: 'true'
       build_alse_static: 'true'
+      
