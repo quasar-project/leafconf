@@ -138,6 +138,12 @@ namespace leaf::conf
     if(not handle.is_open())
       return Err("failed to open file handle for writing at {}", this->path().string());
 
+    if(fs::exists(this->path())) {
+      const auto permissions = fs::perms::owner_read | fs::perms::owner_write | fs::perms::group_read
+        | fs::perms::others_read | fs::perms::others_exec;
+      fs::permissions(this->path(), permissions);
+    }
+
     handle << content;
     if(not handle.good())
       return Err("failed to write to file at {}", this->path().string());
